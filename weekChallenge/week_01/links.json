@@ -1,0 +1,63 @@
+{
+    "개발_공식문서": [
+        "https://docs.python.org/3/",
+        "https://developer.mozilla.org/ko/",
+        "https://react.dev",
+        "https://nodejs.org/en/docs",
+        "https://fastapi.tiangolo.com",
+        "https://tailwindcss.com/docs"
+    ],
+    "개발_커뮤니티": [
+        "https://github.com",
+        "https://stackoverflow.com",
+        "https://velog.io",
+        "https://okky.kr",
+        "https://news.ycombinator.com",
+        "https://geeknews.inflearn.com"
+    ],
+    "인공지능": [
+        "https://chatgpt.com",
+        "https://gemini.google.com",
+        "https://claude.ai",
+        "https://huggingface.co",
+        "https://openrouter.ai",
+        "https://www.midjourney.com"
+    ],
+    "생산성_협업": [
+        "https://www.notion.so",
+        "https://slack.com",
+        "https://linear.app",
+        "https://www.trello.com",
+        "https://www.figma.com",
+        "https://miro.com"
+    ],
+    "스포츠_게임": [
+        "https://www.op.gg",
+        "https://www.youtube.com/@LCK",
+        "https://liquipedia.net",
+        "https://www.espn.com",
+        "https://sports.news.naver.com",
+        "https://www.fiba.basketball"
+    ],
+    "경제_금융": [
+        "https://finance.yahoo.com",
+        "https://kr.tradingview.com",
+        "https://toss.im",
+        "https://www.investing.com",
+        "https://www.wsj.com"
+    ],
+    "학습_외국어": [
+        "https://papago.naver.com",
+        "https://www.deepl.com/translator",
+        "https://www.inflearn.com",
+        "https://www.coursera.org",
+        "https://www.duolingo.com"
+    ],
+    "포털_뉴스": [
+        "https://www.naver.com",
+        "https://www.daum.net",
+        "https://www.google.com",
+        "https://www.bbc.com/news",
+        "https://www.cnn.com"
+    ]
+}

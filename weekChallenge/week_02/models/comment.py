@@ -6,8 +6,9 @@ class Comment(Base):
     __tablename__ = "comments"
 
     id = Column(Integer, primary_key=True, index=True)
+    # post_id는 왜래키로 사용
     post_id = Column(Integer, ForeignKey("posts.id"))
-    author = Column(String(255)) # String 길이를 명시합니다.
+    author = Column(String(255))
     content = Column(Text)
 
     post = relationship("Post", back_populates="comments")

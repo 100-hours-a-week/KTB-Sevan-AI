@@ -8,5 +8,5 @@ class Summary(Base):
     id = Column(Integer, primary_key=True, index=True)
     post_id = Column(Integer, ForeignKey("posts.id"), unique=True)
     content = Column(Text)
-
+    # post의 summary와 관계(연동)
     post = relationship("Post", back_populates="summary")

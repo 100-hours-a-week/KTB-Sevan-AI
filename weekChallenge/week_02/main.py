@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 # Database 및 Models
 from core.database import engine, Base
-from models import post, comment, summary 
+# from models import post, comment, summary 
 
 # Routers
 from routers import posts, comments, summaries

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>AI 커뮤니티 게시판</title>
+    <style>
+        body { font-family: 'Malgun Gothic', sans-serif; background-color: #f5f6f7; padding: 20px; color: #333; }
+        .container { max-width: 800px; margin: 0 auto; }
+        h1 { text-align: center; color: #4a154b; }
+        
+        /* 폼 양식 스타일 */
+        .form-section { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        .form-section h3 { margin-top: 0; color: #4a154b; }
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .form-group input, .form-group textarea { width: 97%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+        
+        /* 버튼 스타일 */
+        .btn { background-color: #4a154b; color: white; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .btn:hover { background-color: #611f62; }
+        .btn-danger { background-color: #e01e5a; }
+        .btn-danger:hover { background-color: #c9124b; }
+        .btn-sm { padding: 4px 8px; font-size: 12px; }
+        
+        /* 게시글 카드 스타일 */
+        .post-card { background: white; padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .post-header { display: flex; justify-content: space-between; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 15px; }
+        .post-title { font-size: 20px; font-weight: bold; color: #222; }
+        .post-author { color: #666; font-size: 14px; }
+        .post-actions { margin-top: 15px; text-align: right; }
+        .post-content { font-size: 16px; line-height: 1.6; margin-bottom: 20px; white-space: pre-wrap; }
+        
+        /* 댓글 영역 스타일 */
+        .comments-section { background: #fafafa; border-top: 1px dashed #ddd; padding: 15px; border-radius: 4px; margin-top: 15px; }
+        .comment-title { font-size: 14px; font-weight: bold; color: #555; margin-bottom: 10px; }
+        .comment-box { background: white; padding: 10px; border: 1px solid #eee; border-radius: 4px; margin-bottom: 8px; font-size: 14px; }
+        .comment-author { color: #4a154b; font-weight: bold; }
+        .comment-form { margin-top: 15px; display: flex; gap: 10px; }
+        .comment-form input { padding: 6px; border: 1px solid #ccc; border-radius: 4px; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>📋 커뮤니티 게시판</h1>
+        
+        <div class="form-section">
+            <h3>📝 새 게시글 쓰기</h3>
+            <div class="form-group">
+                <label>작성자</label>
+                <input type="text" id="new-author" placeholder="이름을 입력하세요">
+            </div>
+            <div class="form-group">
+                <label>제목</label>
+                <input type="text" id="new-title" placeholder="제목을 입력하세요">
+            </div>
+            <div class="form-group">
+                <label>내용</label>
+                <textarea id="new-content" rows="3" placeholder="내용을 입력하세요"></textarea>
+            </div>
+            <button class="btn" onclick="createPost()">🚀 글 등록하기</button>
+        </div>
+
+        <div id="board-container">
+            <p style="text-align: center;">데이터를 불러오는 중입니다...</p>
+        </div>
+    </div>
+
+    <script>
+        // FastAPI 서버 기본 주소
+        const BASE_URL = "http://127.0.0.1:8000/posts";
+
+        // [조회] 전체 게시글 가져오기
+        function loadPosts() {
+            fetch(BASE_URL + "/")
+                .then(res => res.json())
+                .then(result => renderBoard(result.data))
+                .catch(err => {
+                    document.getElementById("board-container").innerHTML = `<p style="color:red; text-align:center;">⚠️ 서버 연결 실패 (CORS 또는 서버 가동 상태를 확인하세요)</p>`;
+                });
+        }
+
+        // [생성] 새 게시글 등록하기
+        function createPost() {
+            const author = document.getElementById("new-author").value;
+            const title = document.getElementById("new-title").value;
+            const content = document.getElementById("new-content").value;
+
+            if(!author || !title || !content) return alert("모든 칸을 채워주세요!");
+
+            fetch(BASE_URL + "/", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ title: title, content: content, author: author })
+            })
+            .then(res => res.json())
+            .then(result => {
+                alert(result.message);
+                document.getElementById("new-author").value = "";
+                document.getElementById("new-title").value = "";
+                document.getElementById("new-content").value = "";
+                loadPosts(); // 화면 새로고침
+            });
+        }
+
+        // [수정] 게시글 수정하기
+        function updatePost(postId, currentTitle, currentContent) {
+            const nextTitle = prompt("수정할 제목을 입력하세요:", currentTitle);
+            if (nextTitle === null) return;
+            
+            const nextContent = prompt("수정할 내용을 입력하세요:", currentContent);
+            if (nextContent === null) return;
+
+            fetch(`${BASE_URL}/${postId}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ title: nextTitle, content: nextContent })
+            })
+            .then(res => res.json())
+            .then(result => {
+                alert(result.message);
+                loadPosts();
+            });
+        }
+
+        // [삭제] 게시글 지우기
+        function deletePost(postId) {
+            if(!confirm(`${postId}번 글을 정말 삭제하시겠습니까?`)) return;
+
+            fetch(`${BASE_URL}/${postId}`, {
+                method: "DELETE"
+            })
+            .then(res => res.json())
+            .then(result => {
+                alert(result.message);
+                loadPosts();
+            });
+        }
+
+        // 🛠️ [댓글 생성 ] 
+        function createComment(postId) {
+            // 특정 글 번호(postId) 구멍에 매칭되는 입력창의 글자들을 정확하게 긁어옵니다.
+            const authorInput = document.getElementById(`comment-author-${postId}`);
+            const contentInput = document.getElementById(`comment-content-${postId}`);
+
+            const author = authorInput.value.strip ? authorInput.value.strip() : authorInput.value.trim();
+            const content = contentInput.value.strip ? contentInput.value.strip() : contentInput.value.trim();
+
+            if(!author || !content) return alert("댓글 작성자와 내용을 모두 입력하세요!");
+
+            // 백엔드가 제공하는 @app.post("/posts/{post_id}/comments") 통로로 데이터 전송
+            fetch(`${BASE_URL}/${postId}/comments`, {
+                method: "POST",
+                headers: { 
+                    "Content-Type": "application/json"  // 백엔드가 파싱할 수 있게 헤더 고정
+                },
+                body: JSON.stringify({ 
+                    author: author, 
+                    content: content 
+                })
+            })
+            .then(res => res.json())
+            .then(result => {
+                alert(result.message); // "댓글이 성공적으로 달렸습니다." 메시지 출력
+                loadPosts(); // 댓글이 추가된 최신 주머니 상태로 화면 새로고침!
+            })
+            .catch(err => alert("댓글 등록 중 에러가 발생했습니다."));
+        }
+
+        // 🎨 화면 렌더링 함수
+        function renderBoard(postsArray) {
+            const container = document.getElementById("board-container");
+            container.innerHTML = "";
+
+            if (!postsArray || postsArray.length === 0) {
+                container.innerHTML = "<p style='text-align:center; color:#999;'>등록된 게시글이 없습니다. 첫 글을 작성해 보세요!</p>";
+                return;
+            }
+
+            postsArray.forEach(post => {
+                // 댓글 목록 조립
+                let commentsHtml = "";
+                if (post.comments && post.comments.length > 0) {
+                    post.comments.forEach(comment => {
+                        commentsHtml += `
+                            <div class="comment-box">
+                                <span class="comment-author">${comment.author}:</span>
+                                <span>${comment.content}</span>
+                            </div>
+                        `;
+                    });
+                } else {
+                    commentsHtml = "<p style='color:#999; font-size:13px;'>아직 댓글이 없습니다.</p>";
+                }
+
+                // 게시글 카드 틀 조립
+                const postCard = document.createElement("div");
+                postCard.className = "post-card";
+                postCard.innerHTML = `
+                    <div class="post-header">
+                        <div class="post-title">${post.title}</div>
+                        <div class="post-author">작성자: <strong>${post.author}</strong> (글 번호: ${post.id})</div>
+                    </div>
+                    <div class="post-content">${post.content}</div>
+                    
+                    <div class="post-actions">
+                        <button class="btn btn-sm" onclick="updatePost(${post.id}, '${post.title}', '${post.content}')">✏️ 수정</button>
+                        <button class="btn btn-sm btn-danger" onclick="deletePost(${post.id})">🗑️ 삭제</button>
+                    </div>
+
+                    <div class="comments-section">
+                        <div class="comment-title">💬 댓글 목록</div>
+                        ${commentsHtml}
+                        
+                        <div class="comment-form">
+                            <input type="text" id="comment-author-${post.id}" placeholder="작성자" style="width:20%;">
+                            <input type="text" id="comment-content-${post.id}" placeholder="댓글 내용을 입력하세요" style="width:65%;">
+                            <button class="btn btn-sm" onclick="createComment(${post.id})">등록</button>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(postCard);
+            });
+        }
+
+        // 처음 켜질 때 자동 실행
+        window.onload = loadPosts;
+    </script>
+</body>
+</html>
+
+

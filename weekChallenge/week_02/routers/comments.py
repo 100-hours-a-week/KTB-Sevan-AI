@@ -21,6 +21,8 @@ def create_comment(post_id: int, comment: CommentCreate, db: Session = Depends(g
 
 @router.get("/{comment_id}")
 def get_comment(post_id: int, comment_id: int, db: Session = Depends(get_db)):
+    # first() -> 처음 데이터만 가져온다
+    # 
     comment = db.query(Comment).filter(Comment.id == comment_id, Comment.post_id == post_id).first()
     if not comment:
         raise HTTPException(status_code=404, detail=f"{comment_id}번 댓글을 찾을 수 없습니다.")

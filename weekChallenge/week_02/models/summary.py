@@ -6,6 +6,7 @@ class Summary(Base):
     __tablename__ = "summaries"
 
     id = Column(Integer, primary_key=True, index=True)
+    # post_id는 왜래키로 사용
     post_id = Column(Integer, ForeignKey("posts.id"), unique=True)
     content = Column(Text)
     # post의 summary와 관계(연동)
